@@ -4,7 +4,7 @@ import requests
 
 # AWS Configurations
 s3 = boto3.client("s3")
-BUCKET_NAME = "s3-crypto-data-pipeline"  # Replace with your S3 bucket name
+BUCKET_NAME = "s3-crypto-data-pipeline"  # AWS S3 bucket name
 RAW_KEY = "raw/crypto_data.json"
 TRANSFORMED_KEY = "transformed/crypto_data_transformed.json"
 
@@ -42,19 +42,19 @@ def load_to_s3(data, key):
 if __name__ == "__main__":
     print("Starting ETL process...")
 
-    # 1. Extract
+    # Extract
     print("Extracting data...")
     raw_data = extract_crypto_data()
 
-    # 2. Load Raw Data to S3
+    # Load Raw Data to S3
     print("Loading raw data to S3...")
     load_to_s3(raw_data, RAW_KEY)
 
-    # 3. Transform
+    # Transform
     print("Transforming data...")
     transformed_data = transform_data(raw_data)
 
-    # 4. Load Transformed Data to S3
+    # Load Transformed Data to S3
     print("Loading transformed data to S3...")
     load_to_s3(transformed_data, TRANSFORMED_KEY)
 
