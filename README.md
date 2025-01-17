@@ -23,7 +23,7 @@ This project demonstrates an ETL pipeline to extract cryptocurrency data from th
 - AWS account with S3 bucket configured
 
 2. Clone the Repo to your local machine:
-git clone https://github.com/yourusername/crypto-etl-project.git
+git clone https://github.com/tmori94/crypto-etc-project-aws.git
 cd crypto-etl-project
 
 3. Set up a VENV
