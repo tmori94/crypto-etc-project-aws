@@ -62,3 +62,5 @@ cd crypto-etl-project
     "volume_usd": 30000000000
   }
 ]
+
+## Transformation process is purely demonstrative. Several additional transformation could still be applied. 
