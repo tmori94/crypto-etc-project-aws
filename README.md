@@ -43,36 +43,22 @@ cd crypto-etl-project
 ## Testing the Pipeline
     pytest tests/
 
-## Example Output
-[
-  {
-    "id": "bitcoin",
-    "symbol": "btc",
-    "name": "Bitcoin",
-    "current_price": 50000,
-    "market_cap": 900000000,
-    "total_volume": 35000000
-  },
-  {
-    "id": "ethereum",
-    "symbol": "eth",
-    "name": "Ethereum",
-    "current_price": 3000,
-    "market_cap": 400000000,
-    "total_volume": 20000000
-  }
-]
-
 ## Transformed Data sample
 [
   {
+    "id": "bitcoin",
     "name": "Bitcoin",
-    "symbol": "BTC",
-    "price": 50000
+    "symbol": "btc",
+    "price_usd": 50000,
+    "market_cap_usd": 900000000000,
+    "volume_usd": 45000000000
   },
   {
+    "id": "ethereum",
     "name": "Ethereum",
-    "symbol": "ETH",
-    "price": 3000
+    "symbol": "eth",
+    "price_usd": 4000,
+    "market_cap_usd": 500000000000,
+    "volume_usd": 30000000000
   }
 ]
