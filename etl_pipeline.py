@@ -1,61 +1,63 @@
-import boto3
 import json
+import boto3
 import requests
 
-# AWS Configurations
-s3 = boto3.client("s3")
-BUCKET_NAME = "s3-crypto-data-pipeline"  # AWS S3 bucket name
-RAW_KEY = "raw/crypto_data.json"
-TRANSFORMED_KEY = "transformed/crypto_data_transformed.json"
-
-def extract_crypto_data():
-    """
-    Extracts cryptocurrency data from CoinGecko API.
-    """
+# Function to fetch data from the CoinGecko API
+def fetch_data_from_api():
     url = "https://api.coingecko.com/api/v3/coins/markets"
     params = {"vs_currency": "usd", "order": "market_cap_desc", "per_page": 10, "page": 1}
     response = requests.get(url, params=params)
-    response.raise_for_status()
-    return response.json()
+    response.raise_for_status()  # Raise an error if the API call fails
+    return response.json()  # Parse and return the JSON response
 
+# Function to transform the data into the desired format
 def transform_data(data):
-    """
-    Transforms the raw cryptocurrency data.
-    Filters and restructures the data.
-    """
-    return [
-        {"name": item["name"], "symbol": item["symbol"], "price": item["current_price"]}
-        for item in data
-    ]
+    transformed_data = []
+    for coin in data:
+        transformed_coin = {
+            "id": coin["id"],
+            "name": coin["name"],
+            "symbol": coin["symbol"],
+            "price_usd": coin["current_price"],
+            "market_cap_usd": coin["market_cap"],
+            "volume_usd": coin["total_volume"],
+        }
+        transformed_data.append(transformed_coin)
+    return transformed_data
 
-def load_to_s3(data, key):
-    """
-    Loads data to an S3 bucket.
-    """
+# Function to load the transformed data into S3
+def load_data_to_s3(transformed_data):
+    s3 = boto3.client("s3")
+    bucket_name = "s3-crypto-data-pipeline"  # Your S3 bucket name
+    file_key = "transformed/crypto_data.json"  # Path for storing transformed data
+
     s3.put_object(
-        Bucket=BUCKET_NAME,
-        Key=key,
-        Body=json.dumps(data),
+        Bucket=bucket_name,
+        Key=file_key,
+        Body=json.dumps(transformed_data),
     )
-    print(f"Data successfully saved to {BUCKET_NAME}/{key}")
 
-if __name__ == "__main__":
-    print("Starting ETL process...")
+# Lambda handler function that orchestrates the ETL process
+def lambda_handler(event, context):
+    try:
+        # Step 1: Extract data from the API
+        data = fetch_data_from_api()
 
-    # Extract
-    print("Extracting data...")
-    raw_data = extract_crypto_data()
+        # Step 2: Transform the data
+        transformed_data = transform_data(data)
 
-    # Load Raw Data to S3
-    print("Loading raw data to S3...")
-    load_to_s3(raw_data, RAW_KEY)
+        # Step 3: Load the transformed data to S3
+        load_data_to_s3(transformed_data)
 
-    # Transform
-    print("Transforming data...")
-    transformed_data = transform_data(raw_data)
+        # Step 4: Return success response
+        return {
+            "statusCode": 200,
+            "body": "Transformed data successfully saved to S3"
+        }
 
-    # Load Transformed Data to S3
-    print("Loading transformed data to S3...")
-    load_to_s3(transformed_data, TRANSFORMED_KEY)
-
-    print("ETL process completed.")
+    except Exception as e:
+        # Handle any error that occurs during the ETL process
+        return {
+            "statusCode": 500,
+            "body": f"Error: {str(e)}"
+        }
