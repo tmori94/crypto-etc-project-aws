@@ -5,7 +5,7 @@ import requests
 # Function to fetch data from the CoinGecko API
 def fetch_data_from_api():
     url = "https://api.coingecko.com/api/v3/coins/markets"
-    params = {"vs_currency": "usd", "order": "market_cap_desc", "per_page": 10, "page": 1}
+    params = {"vs_currency": "eur", "order": "market_cap_desc", "per_page": 10, "page": 1}
     response = requests.get(url, params=params)
     response.raise_for_status()  # Raise an error if the API call fails
     return response.json()  # Parse and return the JSON response
@@ -19,7 +19,7 @@ def transform_data(data):
             "name": coin["name"],
             "symbol": coin["symbol"],
             "price_usd": coin["current_price"],
-            "market_cap_usd": coin["market_cap"],
+            "market_cap_eur": coin["market_cap"],
             "volume_usd": coin["total_volume"],
         }
         transformed_data.append(transformed_coin)
